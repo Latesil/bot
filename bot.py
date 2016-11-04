@@ -136,7 +136,7 @@ def handle_text(message):
     }
     if message.text == "че угодно" or message.text == "что угодно":
         answer = "А ты хорош."
-    elif message.text in notes.items():
+    elif message.text in notes.keys():
         bot.send_message(message.chat.id, melody)
         for key, value in notes.items():
             if key == message.text:
