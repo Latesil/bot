@@ -62,17 +62,17 @@ def handle_start(message):
     hide_markup = telebot.types.ReplyKeyboardHide
     bot.send_message(message.from_user.id, "..", reply_markup=hide_markup)
 #send foto 
-@bot.message_handler(commands=['foto'])
-def send_photo(message):
-    bot.send_chat_action(message.from_user.id, 'upload_photo')
-    directory = "d:/PYTHON/Telega/Fotos/"
-    all_files_in_directory = os.listdir(directory)
-    random_file = random.choice(all_files_in_directory)
-    img = open(directory + random_file, 'rb')
-    bot.send_photo(message.from_user.id, img, reply_to_message_id=message.message_id)
-    img.close()
-    answer = "Отправил" + ' ' + random_file
-    log(message, answer)
+#@bot.message_handler(commands=['foto'])
+#def send_photo(message):
+#    bot.send_chat_action(message.from_user.id, 'upload_photo')
+#    directory = "d:/PYTHON/Telega/Fotos/"
+#    all_files_in_directory = os.listdir(directory)
+#    random_file = random.choice(all_files_in_directory)
+#    img = open(directory + random_file, 'rb')
+#    bot.send_photo(message.from_user.id, img, reply_to_message_id=message.message_id)
+#    img.close()
+#    answer = "Отправил" + ' ' + random_file
+#    log(message, answer)
 
 #foto from internet
 @bot.message_handler(commands=['2ch'])
