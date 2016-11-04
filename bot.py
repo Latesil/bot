@@ -121,63 +121,26 @@ def handle_text(message):
         татара-тара-там..
         тра-та-тара-тара-там
         ТА-ТА..."""
-    notes = [
-        'C','G','D','A','E','H','Gb','F#','Db','C#','G#','Ab','Eb','D#','Bb',
-        'A#','F','Am','Em','Hm','Fm#','Cm#','Gm#','Emb','Bmb','Dm#','A#m','Fm',
-        'Cm','Gm','Dm'
-    ]
+    notes = {
+        'C':'Дальше можно: G, Am, F','G':'Дальше можно: C, Em, D','D':'Дальше можно: G, Hm, A',
+        'A':'Дальше можно: E, Fm#, D','E':'Дальше можно: A, Cm#, H','H':'Дальше можно: Gm#, Gb (F#), E',
+        'Gb':'Дальше можно: Db, Emb, H','F#':'Дальше можно: Db, Emb, H','Db':'Дальше можно: Bm b, Gb (F#), Ab',
+        'C#':'Дальше можно: Bm b, Gb (F#), Ab','G#':'Дальше можно: Eb, Fm, Db','Ab':'Дальше можно: Eb, Fm, Db',
+        'Eb':'Дальше можно: Bb, Cm, Ab','D#':'Дальше можно: Bb, Cm, Ab','Bb':'Дальше можно: Gm, Eb, F',
+        'A#':'Дальше можно: Gm, Eb, F','F':'Дальше можно: C, Bb, Dm','Am':'Дальше можно: C, Dm, Em',
+        'Em':'Дальше можно: G, Am, Hm','Hm':'Дальше можно: D, Em, Fm#','Fm#':'Дальше можно: Cm#, A, Hm',
+        'Cm#':'Дальше можно: E, Gm#, Fm#','Gm#':'Дальше можно: H, Emb, Cm#','Emb':'Дальше можно: Gb (F#), Bmb, Gm#',
+        'Bmb':'Дальше можно: Gb (F#), Bmb, Gm#','Dm#':'Дальше можно: Gb (F#), Bmb, Gm#','A#m':'Дальше можно: Gb (F#), Bmb, Gm#',
+        'Fm':'Дальше можно: Cm, Ab, Bmb','Cm':'Дальше можно: Eb, Gm, Fm','Gm':'Дальше можно: Dm, Cm, Bb',
+        'Dm':'Дальше можно: Gm, Am, F',
+    }
     if message.text == "че угодно" or message.text == "что угодно":
         answer = "А ты хорош."
-    elif message.text in notes:
+    elif message.text in notes.keys():
         bot.send_message(message.chat.id, melody)
-        if message.text == 'C':
-            answer = 'Дальше можно: G, Am, F'
-        elif message.text == 'G':
-            answer = 'Дальше можно: C, Em, D'
-        elif message.text == 'D':
-            answer = 'Дальше можно: G, Hm, A'
-        elif message.text == 'A':
-            answer = 'Дальше можно: E, Fm#, D'
-        elif message.text == 'E':
-            answer = 'Дальше можно: A, Cm#, H'
-        elif message.text == 'H':
-            answer = 'Дальше можно: Gm#, Gb (F#), E'
-        elif message.text == 'Gb' or message.text == 'F#':
-            answer = 'Дальше можно: Db, Emb, H'
-        elif message.text == 'Db' or message.text == 'C#':
-            answer = 'Дальше можно: Bm b, Gb (F#), Ab'
-        elif message.text == 'Ab' or message.text == 'G#':
-            answer = 'Дальше можно: Eb, Fm, Db'
-        elif message.text == 'Eb' or message.text == 'D#':
-            answer = 'Дальше можно: Bb, Cm, Ab'
-        elif message.text == 'Bb' or message.text == 'A#':
-            answer = 'Дальше можно: Gm, Eb, F'
-        elif message.text == 'F':
-            answer = 'Дальше можно: C, Bb, Dm'
-        elif message.text == 'Am':
-            answer = 'Дальше можно: C, Dm, Em'
-        elif message.text == 'Em':
-            answer = 'Дальше можно: G, Am, Hm'
-        elif message.text == 'Hm':
-            answer = 'Дальше можно: D, Em, Fm#'
-        elif message.text == 'Fm#':
-            answer = 'Дальше можно: Cm#, A, Hm'
-        elif message.text == 'Cm#':
-            answer = 'Дальше можно: E, Gm#, Fm#'
-        elif message.text == 'Gm#':
-            answer = 'Дальше можно: H, Emb, Cm#'
-        elif message.text == 'Emb' or message.text == 'Dm#':
-            answer = 'Дальше можно: Gb (F#), Bmb, Gm#'
-        elif message.text == 'Bmb' or message.text == 'A#m':
-            answer = 'Дальше можно: Db, Emb, Fm'
-        elif message.text == 'Fm':
-            answer = 'Дальше можно: Cm, Ab, Bmb'
-        elif message.text == 'Cm':
-            answer = 'Дальше можно: Eb, Gm, Fm'
-        elif message.text == 'Gm':
-            answer = 'Дальше можно: Dm, Cm, Bb'
-        elif message.text == 'Dm':
-            answer = 'Дальше можно: Gm, Am, F'
+        for key, value in notes.items():
+            if key == message.text:
+                answer = value
     elif "убью" in message.text:
         answer = "Баюс баюс."
     # for particular person with that ID:
