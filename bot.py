@@ -121,7 +121,6 @@ def handle_text(message):
         татара-тара-там..
         тра-та-тара-тара-там
         ТА-ТА..."""
-    horse = ['Нихуя', 'Тебе повезет.']
     notes = [
         'C','G','D','A','E','H','Gb','F#','Db','C#','G#','Ab','Eb','D#','Bb',
         'A#','F','Am','Em','Hm','Fm#','Cm#','Gm#','Emb','Bmb','Dm#','A#m','Fm',
@@ -192,9 +191,6 @@ def handle_text(message):
         answer = 'Какой нахуй братишка? Ты меня уже доебал!'
     elif message.text in ['никак', "норм", "нормас", "плохо", "збс"]:
         answer = 'збс, я рад.'
-    elif message.text == 'конь':
-        qua = horse[random.randint(0, 1)]
-        answer = qua
     elif 'окбот' in message.text:
         quantity = random.randint(0, 100)
         black_list = ['сколько', 'какого', 'Сколько', 'Какого', 'куда', 'Куда', 'откуда', 'Откуда', "Когда", 'когда']
