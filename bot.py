@@ -47,7 +47,7 @@ def handle_text(message):
 #responce for settings
 @bot.message_handler(commands=['settings'])
 def handle_text(message):
-    bot.send_message(message.chat.id, 'Вот что ты ожидал тут увидеть?')
+    bot.send_message(message.chat.id, 'Ну и что ты ожидал тут увидеть?')
 
 @bot.message_handler(commands=['start'])
 def handle_start(message):
