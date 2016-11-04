@@ -53,7 +53,7 @@ def handle_text(message):
 def handle_start(message):
     user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
     user_markup.row('/start', '/settings')
-    user_markup.row('/foto', '/help', '/2ch')
+    user_markup.row('/help', '/2ch')
     bot.send_message(message.from_user.id, "Привет, человек. Напиши мне че угодно.", reply_markup=user_markup)
 
 #stop keyboard
@@ -61,59 +61,47 @@ def handle_start(message):
 def handle_start(message):
     hide_markup = telebot.types.ReplyKeyboardHide
     bot.send_message(message.from_user.id, "..", reply_markup=hide_markup)
-#send foto 
-#@bot.message_handler(commands=['foto'])
-#def send_photo(message):
-#    bot.send_chat_action(message.from_user.id, 'upload_photo')
-#    directory = "d:/PYTHON/Telega/Fotos/"
-#    all_files_in_directory = os.listdir(directory)
-#    random_file = random.choice(all_files_in_directory)
-#    img = open(directory + random_file, 'rb')
-#    bot.send_photo(message.from_user.id, img, reply_to_message_id=message.message_id)
-#    img.close()
-#    answer = "Отправил" + ' ' + random_file
-#    log(message, answer)
 
 #foto from internet
 @bot.message_handler(commands=['2ch'])
 def from_url(message):
-    all_boards = [
-        'b', 'au','bi','biz','bo','c','em','fa','fiz',
-        'fl','ftb','hh','hi','me','mg','mlp','mo', 'b',
-        'mov','mu','ne','psy','re','sci','sf','sn', 'b',
-        'sp','spc','tv','un','w','wh','wm','wp','zog', 'b',
-        'de','di','diy','mus','pa','p','wrk','trv', 'b',
-        'gd','hw','mobi','pr','ra','s','t','web','bg', 'b',
-        'cg','ruvn','tes','v','vg','wr','a','fd','ja', 'b',
-        'ma','vn','b','o','soc','media','r', 'aa', 'abu',
-        'rf','fg','fur','ga','vape','h','ho','hc', 'b',
-        'e','fet','sex','fag','int','po','news','dev','gg'
-    ]
-    board = all_boards[random.randint(1, (len(all_boards)))] #letter
+    all_boards = {
+        'b':'https://2ch.hk/b/','mlp':'https://2ch.hk/mlp/','spc':'https://2ch.hk/spc/','wp':'https://2ch.hk/wp/',
+        'a':'https://2ch.hk/a/','fd':'https://2ch.hk/fd/','aa':'https://2ch.hk/aa/','rf':'https://2ch.hk/rf/','ga':'https://2ch.hk/ga/',
+        'h':'https://2ch.hk/h/','hc':'https://2ch.hk/hc/','e':'https://2ch.hk/e/','fag':'https://2ch.hk/fag/',
+        'int':'https://2ch.hk/int/','po':'https://2ch.hk/po/','gg':'https://2ch.hk/gg/'
+    }
     list_urls = []
     time.sleep(0.5)
     bot.send_message(message.chat.id, "Щас, секунду...")
-    len_board = len(board)
-    board_url = 'https://2ch.hk/' + board + '/'
-    source_code = requests.get(board_url)
-    plain_text = source_code.text
-    soup = BeautifulSoup(plain_text, 'lxml')
-    for img in soup.findAll('a', {'name': 'expandfunc'}):
-        link_to_image = img.get('href')
-        #print(link_to_image)
-        #add links on threads to list
-        if link_to_image is not None and '.webm' not in link_to_image and '.gif' not in link_to_image:
-                list_urls.append(board_url[:-1] + link_to_image[len_board+1:])
-    url = list_urls[random.randint(0, (len(list_urls)-1))]
-    time.sleep(2)
-    bot.send_photo(message.from_user.id, url, reply_to_message_id=message.message_id)
-    time.sleep(2)
-    if board == 'ga':
-        bot.send_message(message.chat.id, "Петушок, эта картинка была специально для тебя, прямиком из:" + " " + board_url)
-    else:
-        bot.send_message(message.chat.id, "Ну как? Кстати, я эту картинку взял отсюда:" + " " + board_url)
-    answer = "Отправил" + ' ' + url
-    log(message, answer)
+    board = random.choice(list(all_boards.keys()))
+    for key, value in all_boards.items():
+        if key == board:
+            board_url = value
+    source_code = requests.get(board_url) #all page code
+    try:
+        source_code.raise_for_status()
+        plain_text = source_code.text #convert all code to string
+        soup = BeautifulSoup(plain_text, 'lxml')
+        #print(list_urls)
+        for img in soup.findAll('a', {'name': 'expandfunc'}):
+            link_to_image = img.get('href')
+            #add links on threads to list
+            if link_to_image is not None and '.webm' not in link_to_image and '.gif' not in link_to_image:
+                    list_urls.append('http://2ch.hk' + link_to_image)
+        url = random.choice(list_urls)
+        time.sleep(2)
+        bot.send_photo(message.from_user.id, url)
+        time.sleep(2)
+        if board == 'ga':
+            bot.send_message(message.chat.id, "Петушок, эта картинка была специально для тебя, прямиком из:" + " " + board_url)
+        else:
+            bot.send_message(message.chat.id, "Хочешь ещё? Жми: /2ch")
+        answer = "Отправил" + ' ' + url
+        log(message, answer)
+    except requests.exceptions.HTTPError:
+        list_urls.append('https://2ch.hk/images/monkey_not_found.jpg')
+        bot.send_message(message.chat.id, "Сорян, что-то пошло не так. Попробуй снова.")
 #responses for message (or from_user.id)
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
@@ -150,6 +138,8 @@ def handle_text(message):
         answer = 'А сам-то одноглазый наверно?'
     elif 'два фуфела' in message.text:
         answer = 'Фуфел тут только ты.'
+    elif message.text == "нет":
+        answer = 'Пидора ответ.'
     elif 'братишка' in message.text:
         answer = 'Какой нахуй братишка? Ты меня уже доебал!'
     elif message.text in ['никак', "норм", "нормас", "плохо", "збс"]:
@@ -166,13 +156,21 @@ def handle_text(message):
                 answer = 'Да, так и будет. Инфа соточка.'
             elif quantity > 90 and quantity != 100:
                 answer = 'Считай что так и будет.'
-            elif quantity > 70 and quantity < 90:
+            elif quantity > 80 and quantity < 90:
+                answer = 'Я гарантирую это.'
+            elif quantity > 70 and quantity < 80:
                 answer = 'Скорее всего так и будет.'
-            elif quantity > 50 and quantity < 70:
-                answer = 'Шансы неплохи.'
-            elif quantity > 30 and quantity < 50:
+            elif quantity > 60 and quantity < 70:
+                answer = 'Я бы особо на это не надеялся.'
+            elif quantity > 50 and quantity < 60:
+                answer = '50 на 50'
+            elif quantity > 40 and quantity < 50:
+                answer = 'Шансы есть, а там кто знает.'
+            elif quantity > 30 and quantity < 40:
+                answer = 'Шансов мало, но они есть.'
+            elif quantity > 20 and quantity < 30:
                 answer = 'Ну хуй знает, наверно нет.'
-            elif quantity > 10 and quantity < 30:
+            elif quantity > 10 and quantity < 20:
                 answer = 'Вероятность этого КРАЙНЕ мала.'
             else:
                 answer = 'Ха-ха! Даже не надейся.'
