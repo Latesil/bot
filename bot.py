@@ -13,7 +13,7 @@ bot = telebot.TeleBot(token)
 
 
 WEBHOOK_HOST = 'skipabot.herokuapp.com'
-WEBHOOK_URL_BASE = "https://%s/%s"% (WEBHOOK_HOST, token)
+WEBHOOK_URL_BASE = "https://%s/webhook/%s"% (WEBHOOK_HOST, token)
 #webhook_url = 'https://%s/%s/%s' % (os.environ['URL'], 'webhook', token)
 
 server=Flask(__name__)
@@ -168,14 +168,6 @@ def getMessage():
         ])
     return "", 200
 
-# Установка webhook
-@server.route("/")
-def webhook():
-    bot.remove_webhook()
-    # Если вы будете использовать хостинг или сервис без https
-    # то вам необходимо создать сертификат и
-    # добавить параметр certificate=open('ваш сертификат.pem')
-    return "%s" %bot.set_webhook(url=WEBHOOK_URL_BASE), 200
 
 
 if os.environ.get("LOCAL"):
