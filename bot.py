@@ -8,22 +8,13 @@ import time
 from flask import Flask,request
 from bs4 import BeautifulSoup
 
-mensiratus = 171568889
-i_am = 170060564
-soider = 75266684
-stolen = 167379044
-
 token = os.environ["TOKEN_BOT"]
 bot = telebot.TeleBot(token)
 
 
 WEBHOOK_HOST = 'skipabot.herokuapp.com'
-WEBHOOK_URL_PATH = '/bot'
-WEBHOOK_PORT = os.environ.get('PORT',5000)
-WEBHOOK_LISTEN = '0.0.0.0'
-
-
-WEBHOOK_URL_BASE = "https://%s/%s"% (WEBHOOK_HOST,WEBHOOK_URL_PATH)
+WEBHOOK_URL_BASE = "https://%s/%s"% (WEBHOOK_HOST, token)
+#webhook_url = 'https://%s/%s/%s' % (os.environ['URL'], 'webhook', token)
 
 server=Flask(__name__)
 
@@ -169,13 +160,13 @@ def handle_text(message):
 
 
 # Получение сообщений
-@server.route("/bot", methods=['POST'])
+@server.route('/webhook/%s' % token, methods=['POST'])
 def getMessage():
     # Чтение данных от серверов telegram
     bot.process_new_messages(
         [telebot.types.Update.de_json(request.stream.read().decode("utf-8")).message
         ])
-    return "!", 200
+    return "", 200
 
 # Установка webhook
 @server.route("/")
@@ -186,18 +177,9 @@ def webhook():
     # добавить параметр certificate=open('ваш сертификат.pem')
     return "%s" %bot.set_webhook(url=WEBHOOK_URL_BASE), 200
 
-@server.route("/remove")
-def remove_hook():
-    bot.remove_webhook()
-    return "Webhook has been removed"
-
-# Запуск сервера
-#server.run(host="0.0.0.0", port=os.environ.get('PORT', 5000))
-#webhook()
-
 
 if os.environ.get("LOCAL"):
     bot.remove_webhook()
     bot.polling(none_stop=True, interval=0)
 else:
-    webhook()
+    bot.set_webhook(WEBHOOK_URL_BASE)
