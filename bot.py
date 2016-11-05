@@ -177,11 +177,14 @@ def handle_text(message):
 
 
 
-
-
-
-
-
+# Получение сообщений
+@server.route("/bot", methods=['POST'])
+def getMessage():
+    # Чтение данных от серверов telegram
+    bot.process_new_messages(
+        [telebot.types.Update.de_json(request.stream.read().decode("utf-8")).message
+        ])
+    return "!", 200
 
 # Установка webhook
 @server.route("/")
