@@ -27,15 +27,6 @@ WEBHOOK_URL_BASE = "https://%s/%s"% (WEBHOOK_HOST,WEBHOOK_URL_PATH)
 
 server=Flask(__name__)
 
-# Получение сообщений
-@server.route("/bot", methods=['POST'])
-def getMessage():
-    # Чтение данных от серверов telegram
-    bot.process_new_messages(
-        [telebot.types.Update.de_json(request.stream.read().decode("utf-8")).message
-        ])
-    return "!", 200
-
 #responce for commands
 @bot.message_handler(commands=['help'])
 def handle_text(message):
