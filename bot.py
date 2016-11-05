@@ -1,7 +1,6 @@
 #бот
 import telebot
 import os
-import constants
 import random
 import urllib.request as urllib2
 import requests
@@ -13,32 +12,8 @@ i_am = 170060564
 soider = 75266684
 stolen = 167379044
 
-
-bot = telebot.TeleBot(constants.token)
-
-#send message to smth
-#bot.send_message(stolen, "Бля, охуенная пикча.")
-
-#update
-# upd = bot.get_updates()
-#returns in dict format
-
-#last update from all upds
-# last_upd = upd[-1]
-
-#all messages from last upd
-# message_from_user = last_upd.message
-
-print(bot.get_me())
-#log message and answer
-def log(message, answer):
-    from datetime import datetime
-    #time now for message
-    print("\n ------")
-    print(datetime.now())
-    print("Message from {0} {1}. (id = {2}) \n Text: - {3}".format(message.from_user.first_name,
-    message.from_user.last_name, str(message.from_user.id), message.text))
-    print(answer)
+token = os.environ["TOKEN_BOT"]
+bot = telebot.TeleBot(token)
 
 #responce for commands
 @bot.message_handler(commands=['help'])
@@ -55,21 +30,20 @@ def handle_start(message):
     user_markup.row('/start', '/settings')
     user_markup.row('/help', '/2ch')
     bot.send_message(message.from_user.id, "Привет, человек. Напиши мне че угодно.", reply_markup=user_markup)
-
-#stop keyboard
-@bot.message_handler(commands=['stop'])
-def handle_start(message):
-    hide_markup = telebot.types.ReplyKeyboardHide
-    bot.send_message(message.from_user.id, "..", reply_markup=hide_markup)
+    time.sleep(2)
+    bot.send_message(message.from_user.id, "Или можешь ещё спросить что-нибудь. Напиши: окбот (и далее твой вопрос)", reply_markup=user_markup)
 
 #foto from internet
 @bot.message_handler(commands=['2ch'])
 def from_url(message):
     all_boards = {
-        'b':'https://2ch.hk/b/','mlp':'https://2ch.hk/mlp/','spc':'https://2ch.hk/spc/','wp':'https://2ch.hk/wp/',
-        'a':'https://2ch.hk/a/','fd':'https://2ch.hk/fd/','aa':'https://2ch.hk/aa/','rf':'https://2ch.hk/rf/','ga':'https://2ch.hk/ga/',
-        'h':'https://2ch.hk/h/','hc':'https://2ch.hk/hc/','e':'https://2ch.hk/e/','fag':'https://2ch.hk/fag/',
-        'int':'https://2ch.hk/int/','po':'https://2ch.hk/po/','gg':'https://2ch.hk/gg/'
+        'b':'https://2ch.hk/b/',
+        'a':'https://2ch.hk/a/',
+        'wp':'https://2ch.hk/wp/',
+        'aa':'https://2ch.hk/aa/',
+        'e':'https://2ch.hk/e/',
+        'po':'https://2ch.hk/po/',
+        'ga':'https://2ch.hk/ga/',
     }
     list_urls = []
     time.sleep(0.5)
@@ -78,10 +52,10 @@ def from_url(message):
     for key, value in all_boards.items():
         if key == board:
             board_url = value
-    source_code = requests.get(board_url) #all page code
+    resp = requests.get(board_url) #all page code
     try:
-        source_code.raise_for_status()
-        plain_text = source_code.text #convert all code to string
+        resp.raise_for_status()
+        plain_text = resp.text #convert all code to string
         soup = BeautifulSoup(plain_text, 'lxml')
         #print(list_urls)
         for img in soup.findAll('a', {'name': 'expandfunc'}):
@@ -97,11 +71,12 @@ def from_url(message):
             bot.send_message(message.chat.id, "Петушок, эта картинка была специально для тебя, прямиком из:" + " " + board_url)
         else:
             bot.send_message(message.chat.id, "Хочешь ещё? Жми: /2ch")
-        answer = "Отправил" + ' ' + url
-        log(message, answer)
     except requests.exceptions.HTTPError:
         list_urls.append('https://2ch.hk/images/monkey_not_found.jpg')
         bot.send_message(message.chat.id, "Сорян, что-то пошло не так. Попробуй снова.")
+
+
+
 #responses for message (or from_user.id)
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
@@ -110,17 +85,17 @@ def handle_text(message):
         тра-та-тара-тара-там
         ТА-ТА..."""
     notes = {
-        'C':'Дальше можно: G, Am, F','G':'Дальше можно: C, Em, D','D':'Дальше можно: G, Hm, A',
-        'A':'Дальше можно: E, Fm#, D','E':'Дальше можно: A, Cm#, H','H':'Дальше можно: Gm#, Gb (F#), E',
-        'Gb':'Дальше можно: Db, Emb, H','F#':'Дальше можно: Db, Emb, H','Db':'Дальше можно: Bm b, Gb (F#), Ab',
-        'C#':'Дальше можно: Bm b, Gb (F#), Ab','G#':'Дальше можно: Eb, Fm, Db','Ab':'Дальше можно: Eb, Fm, Db',
-        'Eb':'Дальше можно: Bb, Cm, Ab','D#':'Дальше можно: Bb, Cm, Ab','Bb':'Дальше можно: Gm, Eb, F',
-        'A#':'Дальше можно: Gm, Eb, F','F':'Дальше можно: C, Bb, Dm','Am':'Дальше можно: C, Dm, Em',
-        'Em':'Дальше можно: G, Am, Hm','Hm':'Дальше можно: D, Em, Fm#','Fm#':'Дальше можно: Cm#, A, Hm',
-        'Cm#':'Дальше можно: E, Gm#, Fm#','Gm#':'Дальше можно: H, Emb, Cm#','Emb':'Дальше можно: Gb (F#), Bmb, Gm#',
-        'Bmb':'Дальше можно: Gb (F#), Bmb, Gm#','Dm#':'Дальше можно: Gb (F#), Bmb, Gm#','A#m':'Дальше можно: Gb (F#), Bmb, Gm#',
-        'Fm':'Дальше можно: Cm, Ab, Bmb','Cm':'Дальше можно: Eb, Gm, Fm','Gm':'Дальше можно: Dm, Cm, Bb',
-        'Dm':'Дальше можно: Gm, Am, F',
+        'C':'G, Am, F','G':'C, Em, D','D':'G, Hm, A',
+        'A':'E, Fm#, D','E':'A, Cm#, H','H':'Gm#, Gb (F#), E',
+        'Gb':'Db, Emb, H','F#':'Db, Emb, H','Db':'Bm b, Gb (F#), Ab',
+        'C#':'Bm b, Gb (F#), Ab','G#':'Eb, Fm, Db','Ab':'Eb, Fm, Db',
+        'Eb':'Bb, Cm, Ab','D#':'Bb, Cm, Ab','Bb':'Gm, Eb, F',
+        'A#':'Gm, Eb, F','F':'C, Bb, Dm','Am':'C, Dm, Em',
+        'Em':'G, Am, Hm','Hm':'D, Em, Fm#','Fm#':'Cm#, A, Hm',
+        'Cm#':'E, Gm#, Fm#','Gm#':'H, Emb, Cm#','Emb':'Gb (F#), Bmb, Gm#',
+        'Bmb':'Gb (F#), Bmb, Gm#','Dm#':'Gb (F#), Bmb, Gm#','A#m':'Gb (F#), Bmb, Gm#',
+        'Fm':'Cm, Ab, Bmb','Cm':'Eb, Gm, Fm','Gm':'Dm, Cm, Bb',
+        'Dm':'Gm, Am, F',
     }
     if message.text == "че угодно" or message.text == "что угодно":
         answer = "А ты хорош."
@@ -128,7 +103,7 @@ def handle_text(message):
         bot.send_message(message.chat.id, melody)
         for key, value in notes.items():
             if key == message.text:
-                answer = value
+                answer = 'Дальше можно: ' + value
     elif "убью" in message.text:
         answer = "Баюс баюс."
     # for particular person with that ID:
@@ -178,7 +153,6 @@ def handle_text(message):
         answer = "Не понимаю, что ты пишешь. Лучше попробуй команды какие-нибудь. Или спроси любой вопрос. Напиши 'окбот' и твой вопрос."
     time.sleep(2)
     bot.send_message(message.chat.id, answer)
-    log(message, answer)
 
 
 
