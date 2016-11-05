@@ -5,6 +5,7 @@ import random
 import urllib.request as urllib2
 import requests
 import time
+import flask
 from bs4 import BeautifulSoup
 
 mensiratus = 171568889
@@ -14,6 +15,26 @@ stolen = 167379044
 
 token = os.environ["TOKEN_BOT"]
 bot = telebot.TeleBot(token)
+
+
+WEBHOOK_HOST = 'skipabot.herokuapp.com'
+WEBHOOK_URL_PATH = '/bot'
+WEBHOOK_PORT = os.environ.get('PORT',5000)
+WEBHOOK_LISTEN = '0.0.0.0'
+
+
+WEBHOOK_URL_BASE = "https://%s/%s"% (WEBHOOK_HOST,WEBHOOK_URL_PATH)
+
+server=Flask(__name__)
+
+# Получение сообщений
+@server.route("/bot", methods=['POST'])
+def getMessage():
+    # Чтение данных от серверов telegram
+    bot.process_new_messages(
+        [telebot.types.Update.de_json(request.stream.read().decode("utf-8")).message
+        ])
+    return "!", 200
 
 #responce for commands
 @bot.message_handler(commands=['help'])
@@ -156,4 +177,30 @@ def handle_text(message):
 
 
 
-bot.polling(none_stop=True, interval=0)
+
+
+
+
+
+
+# Установка webhook
+@server.route("/")
+def webhook():
+    bot.remove_webhook()
+    # Если вы будете использовать хостинг или сервис без https
+    # то вам необходимо создать сертификат и
+    # добавить параметр certificate=open('ваш сертификат.pem')
+    return "%s" %bot.set_webhook(url=WEBHOOK_URL_BASE), 200
+
+@server.route("/remove")
+def remove_hook():
+    bot.remove_webhook()
+    return "Webhook has been removed"
+
+# Запуск сервера
+server.run(host="0.0.0.0", port=os.environ.get('PORT', 5000))
+webhook()
+
+
+if __name__ == '__main__':
+    bot.polling(none_stop=True, interval=0)
