@@ -197,6 +197,7 @@ def remove_hook():
 
 
 if os.environ["LOCAL"]:
+    bot.remove_webhook()
     bot.polling(none_stop=True, interval=0)
 else:
     webhook()
