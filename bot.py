@@ -5,7 +5,7 @@ import random
 import urllib.request as urllib2
 import requests
 import time
-import flask
+from flask import Flask,request
 from bs4 import BeautifulSoup
 
 mensiratus = 171568889
