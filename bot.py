@@ -193,8 +193,10 @@ def remove_hook():
 
 # Запуск сервера
 #server.run(host="0.0.0.0", port=os.environ.get('PORT', 5000))
-webhook()
+#webhook()
 
 
-#if __name__ == '__main__':
-#    bot.polling(none_stop=True, interval=0)
+if os.environ["LOCAL"]:
+    bot.polling(none_stop=True, interval=0)
+else:
+    webhook()
